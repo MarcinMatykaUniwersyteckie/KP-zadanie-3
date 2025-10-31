@@ -124,20 +124,7 @@ def correct_times(**kwargs):
 
         current_day += 1
 
-# Main function of the program
 # Reads raw data about months, days and times of day, gives out path
-def parse_paths(**kwargs):
-    assert len(kwargs) == 3, ERROR_MESSAGE
-    assert 'months' in kwargs, ERROR_MESSAGE
-    assert 'days' in kwargs, ERROR_MESSAGE
-    assert 'times' in kwargs, ERROR_MESSAGE
-
-    months = parse_months(*kwargs['months'])
-    days = parse_days(months = months, days = kwargs['days'])
-    correct_times(days = days, times = kwargs['times'])
-
-    return strings_to_paths(*days)
-
 #
 # Example usage:
 #
@@ -158,3 +145,29 @@ def parse_paths(**kwargs):
 # Kwiecień/poniedziałek/rano,
 # Kwiecień/wtorek/rano]
 #
+# You can also run without parameter times, in that case it is set to default in all cases
+#
+def parse_paths(**kwargs):
+    assert len(kwargs) == 2 or len(kwargs) == 3, ERROR_MESSAGE
+    assert 'months' in kwargs, ERROR_MESSAGE
+    assert 'days' in kwargs, ERROR_MESSAGE
+
+    months = parse_months(*kwargs['months'])
+    days = parse_days(months = months, days = kwargs['days'])
+
+    if len(kwargs) == 3:
+        assert 'times' in kwargs, ERROR_MESSAGE
+        correct_times(days = days, times = kwargs['times'])
+
+    return strings_to_paths(*days)
+
+# Creates an actual path from a path object (write mode)
+# Or checks if it exists (read mode)
+# Returns True if the path exists after the operation, False otherwise
+def create_or_check_path(path, read, write):
+    assert isinstance(path, Path), ERROR_MESSAGE
+    if read:
+        return path.exists()
+    if write and not path.exists():
+        path.mkdir(parents = True, exist_ok = True)
+    return True
