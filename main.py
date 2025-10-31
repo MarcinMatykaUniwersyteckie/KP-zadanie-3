@@ -1,5 +1,5 @@
 import argparse
-#import nie_mój_plik
+import path_creator
 
 def dodaj_argumenty(parser):
     parser.add_argument("--miesiące", required=True, nargs="+", type=str, help="lista miesięcy (słownie)")
@@ -57,6 +57,7 @@ def czy_zawartość_ok(args):
     if not set(args.miesiące).issubset(miesiące):
         print("Zła nazwa miesiąca!")
         return False
+    # To jest źle, bo mogą być przedziały, np. pn-wt i tutaj to byłby błąd:
     elif not set(args.dni_tygodnia).issubset(dni_tygodnia):
         print("Zła nazwa dnia tygodnia!")
         return False
@@ -73,12 +74,27 @@ def czy_argumenty_są_poprawne(args):
 
 def main():
     args = sparsuj_argumenty()
-    if czy_argumenty_są_poprawne(args):
-        #nie_moja_funkcja(agrs);
+
+    # Nie sprawdzasz poprawności argumentów, bo ja to robię lepiej
+    # Sprawdzasz tylko, czy dobry tryb
+    if czy_parametry_ok(args):
+        if args.pora_dnia == 'rano':
+            paths = path_creator.parse_paths(months = args.miesiące, days = args.dni_tygodnia)
+        else:
+            paths = path_creator.parse_paths(months = args.miesiące, days = args.dni_tygodnia, times = args.pora_dnia)
+
+        for path in paths:
+            path_exists = path_creator.create_or_check_path(path, args.odczytaj, args.twórz)
+            if path_exists:
+                print('Tralalala') # roboczo, bo się nie skompiluje
+                # TODO
+                # Tutaj trzeba stworzyć plik csv w ścieżce path, jeżeli nie istnieje (tryb zapisu)
+                # Odczytać zawartość pliku i wypisać na standardowe wyjście (tryb odczytu)
+                # Lub wygenerować zapis do pliku (tryb zapisu)
+                # (osobny plik pythonowy, importujemy funkcję stamtąd)
+            else:
+                print('Próbowano odczytać nieistniejącą ścieżkę!')
+
         pass
 
-
-
-
-
-
+main()
