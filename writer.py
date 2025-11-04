@@ -1,9 +1,10 @@
 import random
 import csv
 import re
+import os
 
 def csv_save(path: str):
-    path += 'Dane.csv'
+    path = os.path.join(path, 'Dane.csv')
     with open(path, 'w', newline='') as file:
         writer = csv.writer(file, delimiter=';')
         writer.writerow(['Model', 'Wynik', 'Czas'])
@@ -57,10 +58,17 @@ def validate_line(line):
     return 0
 
 
+def check_csv_exists(path: str):
+    file_path = os.path.join(path, 'Dane.csv')
+    return os.path.isfile(file_path), os.path.join(path, 'Dane.csv')
+
+
 def csv_read(path: str):
-    if not path:
-        return 'Path does not exist. Could not write csv to path'
-    
+    if_file_exists, path = check_csv_exists(path)
+    if not if_file_exists:
+        print(f'File in this {path} does not exist. Could not read csv')
+        return 0
+
     with open(path, 'r', newline='') as file:
         csvFile = csv.reader(file, delimiter=';')
         header = next(csvFile)

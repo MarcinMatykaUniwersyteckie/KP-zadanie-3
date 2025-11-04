@@ -1,5 +1,6 @@
 import argparse
 import path_creator
+import writer
 
 def dodaj_argumenty(parser):
     parser.add_argument("--miesiące", required=True, nargs="+", type=str, help="lista miesięcy (słownie)")
@@ -83,18 +84,18 @@ def main():
         else:
             paths = path_creator.parse_paths(months = args.miesiące, days = args.dni_tygodnia, times = args.pora_dnia)
 
+        total_time = 0
         for path in paths:
             path_exists = path_creator.create_or_check_path(path, args.odczytaj, args.twórz)
             if path_exists:
-                print('Tralalala') # roboczo, bo się nie skompiluje
-                # TODO
-                # Tutaj trzeba stworzyć plik csv w ścieżce path, jeżeli nie istnieje (tryb zapisu)
-                # Odczytać zawartość pliku i wypisać na standardowe wyjście (tryb odczytu)
-                # Lub wygenerować zapis do pliku (tryb zapisu)
-                # (osobny plik pythonowy, importujemy funkcję stamtąd)
+                if args.twórz:
+                    writer.csv_save(path)
+                if args.odczytaj:
+                    total_time += writer.csv_read(path)
             else:
                 print('Próbowano odczytać nieistniejącą ścieżkę!')
 
-        pass
+    if args.odczytaj:
+        print(f'Suma czasu modeli A = {total_time}')
 
 main()
